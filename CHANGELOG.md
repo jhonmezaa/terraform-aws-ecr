@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.0.3] - 2026-02-27
+
+### Fixed
+- Remove unsupported `image_tag_mutability_exclusion_filter` dynamic block not available in current stable AWS provider
+- Remove `MUTABLE_WITH_EXCLUSION` and `IMMUTABLE_WITH_EXCLUSION` from `image_tag_mutability` validation
+
+
 ## [v1.0.2] - 2026-02-27
 
 ### Changed

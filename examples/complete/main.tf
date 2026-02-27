@@ -116,16 +116,10 @@ module "ecr" {
       }
     }
 
-    # Repo with immutable tags but exclusions for dev tags
+    # Repo for ML models with Lambda access
     ml-model = {
-      image_tag_mutability = "IMMUTABLE_WITH_EXCLUSION"
-      image_tag_mutability_exclusion_filter = [
-        {
-          filter      = "dev-*"
-          filter_type = "WILDCARD"
-        }
-      ]
-      image_scan_on_push = true
+      image_tag_mutability = "IMMUTABLE"
+      image_scan_on_push   = true
 
       # Lambda access
       repository_lambda_read_access_arns = [

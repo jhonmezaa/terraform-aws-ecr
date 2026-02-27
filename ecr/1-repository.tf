@@ -17,15 +17,6 @@ resource "aws_ecr_repository" "this" {
     scan_on_push = each.value.image_scan_on_push
   }
 
-  dynamic "image_tag_mutability_exclusion_filter" {
-    for_each = each.value.image_tag_mutability_exclusion_filter != null ? each.value.image_tag_mutability_exclusion_filter : []
-
-    content {
-      filter      = image_tag_mutability_exclusion_filter.value.filter
-      filter_type = image_tag_mutability_exclusion_filter.value.filter_type
-    }
-  }
-
   force_delete = each.value.force_delete
 
   tags = local.repository_tags[each.key]
