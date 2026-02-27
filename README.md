@@ -304,6 +304,7 @@ terraform-aws-ecr/
 | `project_name` | Project name for resource naming | `string` | - | yes |
 | `create` | Master toggle to enable/disable all resources | `bool` | `true` | no |
 | `region_prefix` | Region prefix override (auto-derived if null) | `string` | `null` | no |
+| `use_region_prefix` | Whether to include the region prefix in resource names | `bool` | `true` | no |
 | `tags_common` | Common tags for all resources | `map(string)` | `{}` | no |
 
 ### Private Repositories

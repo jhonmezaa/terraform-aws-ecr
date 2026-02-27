@@ -43,6 +43,9 @@ locals {
     "unknown"
   )
 
+  # Name prefix: includes region prefix when use_region_prefix is true
+  name_prefix = var.use_region_prefix ? "${local.region_prefix}-" : ""
+
   # Account ID for policy defaults
   account_id = data.aws_caller_identity.current.account_id
   partition  = data.aws_partition.current.partition
@@ -54,7 +57,7 @@ locals {
   # Generate repository names following monorepo convention
   repository_names = {
     for k, v in var.repositories :
-    k => "${local.region_prefix}-ecr-${var.account_name}-${var.project_name}-${k}"
+    k => "${local.name_prefix}ecr-${var.account_name}-${var.project_name}-${k}"
   }
 
   # Repositories that need a policy attached
