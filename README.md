@@ -316,8 +316,7 @@ Each repository object supports:
 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
-| `image_tag_mutability` | Tag mutability: MUTABLE, IMMUTABLE, MUTABLE_WITH_EXCLUSION, IMMUTABLE_WITH_EXCLUSION | `string` | `"IMMUTABLE"` |
-| `image_tag_mutability_exclusion_filter` | Filters for tag mutability exclusion | `list(object)` | `null` |
+| `image_tag_mutability` | Tag mutability: MUTABLE, IMMUTABLE | `string` | `"IMMUTABLE"` |
 | `encryption_type` | Encryption type: AES256 or KMS | `string` | `"AES256"` |
 | `kms_key` | KMS key ARN (required when encryption_type is KMS) | `string` | `null` |
 | `image_scan_on_push` | Scan images on push | `bool` | `true` |
@@ -405,7 +404,7 @@ Error: When encryption_type is 'KMS', kms_key must be provided.
 
 ### Error: image_tag_mutability invalid
 ```
-Error: image_tag_mutability must be one of: MUTABLE, IMMUTABLE, MUTABLE_WITH_EXCLUSION, IMMUTABLE_WITH_EXCLUSION.
+Error: image_tag_mutability must be one of: MUTABLE, IMMUTABLE.
 ```
 **Solution**: Use one of the valid values for `image_tag_mutability`.
 

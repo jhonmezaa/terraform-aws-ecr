@@ -39,10 +39,6 @@ variable "repositories" {
   type = map(object({
     # Image tag settings
     image_tag_mutability = optional(string, "IMMUTABLE")
-    image_tag_mutability_exclusion_filter = optional(list(object({
-      filter      = string
-      filter_type = string
-    })), null)
 
     # Encryption
     encryption_type = optional(string, "AES256")
@@ -99,9 +95,9 @@ variable "repositories" {
   validation {
     condition = alltrue([
       for k, v in var.repositories :
-      contains(["MUTABLE", "IMMUTABLE", "MUTABLE_WITH_EXCLUSION", "IMMUTABLE_WITH_EXCLUSION"], v.image_tag_mutability)
+      contains(["MUTABLE", "IMMUTABLE"], v.image_tag_mutability)
     ])
-    error_message = "image_tag_mutability must be one of: MUTABLE, IMMUTABLE, MUTABLE_WITH_EXCLUSION, IMMUTABLE_WITH_EXCLUSION."
+    error_message = "image_tag_mutability must be one of: MUTABLE, IMMUTABLE."
   }
 
   validation {
