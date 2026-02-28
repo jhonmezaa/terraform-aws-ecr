@@ -51,6 +51,7 @@ module "ecr" {
 ```
 
 This creates 3 repositories:
+
 - `ause1-ecr-prod-myapp-api`
 - `ause1-ecr-prod-myapp-worker`
 - `ause1-ecr-prod-myapp-frontend`
@@ -289,84 +290,84 @@ terraform-aws-ecr/
 
 ## Requirements
 
-| Name | Version |
-|------|---------|
+| Name      | Version  |
+| --------- | -------- |
 | terraform | >= 1.5.7 |
-| aws | >= 5.0 |
+| aws       | >= 5.0   |
 
 ## Inputs
 
 ### Common Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `account_name` | Account name for resource naming | `string` | - | yes |
-| `project_name` | Project name for resource naming | `string` | - | yes |
-| `create` | Master toggle to enable/disable all resources | `bool` | `true` | no |
-| `region_prefix` | Region prefix override (auto-derived if null) | `string` | `null` | no |
-| `use_region_prefix` | Whether to include the region prefix in resource names | `bool` | `true` | no |
-| `tags_common` | Common tags for all resources | `map(string)` | `{}` | no |
+| Name                | Description                                            | Type          | Default | Required |
+| ------------------- | ------------------------------------------------------ | ------------- | ------- | -------- |
+| `account_name`      | Account name for resource naming                       | `string`      | -       | yes      |
+| `project_name`      | Project name for resource naming                       | `string`      | -       | yes      |
+| `create`            | Master toggle to enable/disable all resources          | `bool`        | `true`  | no       |
+| `region_prefix`     | Region prefix override (auto-derived if null)          | `string`      | `null`  | no       |
+| `use_region_prefix` | Whether to include the region prefix in resource names | `bool`        | `true`  | no       |
+| `tags_common`       | Common tags for all resources                          | `map(string)` | `{}`    | no       |
 
 ### Private Repositories
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `repositories` | Map of private ECR repository configurations | `map(object({...}))` | `{}` | no |
+| Name           | Description                                  | Type                 | Default | Required |
+| -------------- | -------------------------------------------- | -------------------- | ------- | -------- |
+| `repositories` | Map of private ECR repository configurations | `map(object({...}))` | `{}`    | no       |
 
 Each repository object supports:
 
-| Key | Description | Type | Default |
-|-----|-------------|------|---------|
-| `image_tag_mutability` | Tag mutability: MUTABLE, IMMUTABLE | `string` | `"IMMUTABLE"` |
-| `encryption_type` | Encryption type: AES256 or KMS | `string` | `"AES256"` |
-| `kms_key` | KMS key ARN (required when encryption_type is KMS) | `string` | `null` |
-| `image_scan_on_push` | Scan images on push | `bool` | `true` |
-| `force_delete` | Force delete even with images | `bool` | `false` |
-| `attach_repository_policy` | Attach a repository policy | `bool` | `true` |
-| `create_repository_policy` | Auto-generate repository policy | `bool` | `true` |
-| `repository_policy` | Pre-built policy JSON (when create_repository_policy is false) | `string` | `null` |
-| `repository_read_access_arns` | ARNs with read access | `list(string)` | `[]` |
-| `repository_lambda_read_access_arns` | Lambda function ARNs with read access | `list(string)` | `[]` |
-| `repository_read_write_access_arns` | ARNs with read-write access | `list(string)` | `[]` |
-| `repository_policy_statements` | Custom IAM policy statements | `map(object)` | `null` |
-| `create_lifecycle_policy` | Create a lifecycle policy | `bool` | `false` |
-| `repository_lifecycle_policy` | Lifecycle policy JSON | `string` | `null` |
-| `tags` | Per-repository tags | `map(string)` | `{}` |
+| Key                                  | Description                                                    | Type           | Default       |
+| ------------------------------------ | -------------------------------------------------------------- | -------------- | ------------- |
+| `image_tag_mutability`               | Tag mutability: MUTABLE, IMMUTABLE                             | `string`       | `"IMMUTABLE"` |
+| `encryption_type`                    | Encryption type: AES256 or KMS                                 | `string`       | `"AES256"`    |
+| `kms_key`                            | KMS key ARN (required when encryption_type is KMS)             | `string`       | `null`        |
+| `image_scan_on_push`                 | Scan images on push                                            | `bool`         | `true`        |
+| `force_delete`                       | Force delete even with images                                  | `bool`         | `false`       |
+| `attach_repository_policy`           | Attach a repository policy                                     | `bool`         | `true`        |
+| `create_repository_policy`           | Auto-generate repository policy                                | `bool`         | `true`        |
+| `repository_policy`                  | Pre-built policy JSON (when create_repository_policy is false) | `string`       | `null`        |
+| `repository_read_access_arns`        | ARNs with read access                                          | `list(string)` | `[]`          |
+| `repository_lambda_read_access_arns` | Lambda function ARNs with read access                          | `list(string)` | `[]`          |
+| `repository_read_write_access_arns`  | ARNs with read-write access                                    | `list(string)` | `[]`          |
+| `repository_policy_statements`       | Custom IAM policy statements                                   | `map(object)`  | `null`        |
+| `create_lifecycle_policy`            | Create a lifecycle policy                                      | `bool`         | `false`       |
+| `repository_lifecycle_policy`        | Lifecycle policy JSON                                          | `string`       | `null`        |
+| `tags`                               | Per-repository tags                                            | `map(string)`  | `{}`          |
 
 ### Public Repositories
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `public_repositories` | Map of public ECR repository configurations | `map(object({...}))` | `{}` | no |
+| Name                  | Description                                 | Type                 | Default | Required |
+| --------------------- | ------------------------------------------- | -------------------- | ------- | -------- |
+| `public_repositories` | Map of public ECR repository configurations | `map(object({...}))` | `{}`    | no       |
 
 ### Registry-Level Features
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `create_registry_policy` | Create registry-level IAM policy | `bool` | `false` | no |
-| `registry_policy` | Registry policy JSON | `string` | `null` | no |
-| `registry_pull_through_cache_rules` | Map of pull-through cache rules | `map(object({...}))` | `{}` | no |
-| `manage_registry_scanning_configuration` | Manage registry scanning config | `bool` | `false` | no |
-| `registry_scan_type` | Scan type: ENHANCED or BASIC | `string` | `"ENHANCED"` | no |
-| `registry_scan_rules` | Scanning rules with frequency and filters | `list(object({...}))` | `null` | no |
-| `create_registry_replication_configuration` | Create replication config | `bool` | `false` | no |
-| `registry_replication_rules` | Replication rules with destinations | `list(object({...}))` | `null` | no |
+| Name                                        | Description                               | Type                  | Default      | Required |
+| ------------------------------------------- | ----------------------------------------- | --------------------- | ------------ | -------- |
+| `create_registry_policy`                    | Create registry-level IAM policy          | `bool`                | `false`      | no       |
+| `registry_policy`                           | Registry policy JSON                      | `string`              | `null`       | no       |
+| `registry_pull_through_cache_rules`         | Map of pull-through cache rules           | `map(object({...}))`  | `{}`         | no       |
+| `manage_registry_scanning_configuration`    | Manage registry scanning config           | `bool`                | `false`      | no       |
+| `registry_scan_type`                        | Scan type: ENHANCED or BASIC              | `string`              | `"ENHANCED"` | no       |
+| `registry_scan_rules`                       | Scanning rules with frequency and filters | `list(object({...}))` | `null`       | no       |
+| `create_registry_replication_configuration` | Create replication config                 | `bool`                | `false`      | no       |
+| `registry_replication_rules`                | Replication rules with destinations       | `list(object({...}))` | `null`       | no       |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| `repository_arns` | Map of repository keys to ARNs |
-| `repository_names` | Map of repository keys to names |
-| `repository_urls` | Map of repository keys to URLs |
-| `repository_registry_ids` | Map of repository keys to registry IDs |
-| `public_repository_arns` | Map of public repository keys to ARNs |
-| `public_repository_uris` | Map of public repository keys to URIs |
-| `public_repository_registry_ids` | Map of public repository keys to registry IDs |
-| `registry_scanning_configuration` | The registry scanning configuration |
-| `registry_pull_through_cache_rules` | Map of pull-through cache rules |
-| `repositories_summary` | Comprehensive summary of all private repositories |
-| `public_repositories_summary` | Comprehensive summary of all public repositories |
+| Name                                | Description                                       |
+| ----------------------------------- | ------------------------------------------------- |
+| `repository_arns`                   | Map of repository keys to ARNs                    |
+| `repository_names`                  | Map of repository keys to names                   |
+| `repository_urls`                   | Map of repository keys to URLs                    |
+| `repository_registry_ids`           | Map of repository keys to registry IDs            |
+| `public_repository_arns`            | Map of public repository keys to ARNs             |
+| `public_repository_uris`            | Map of public repository keys to URIs             |
+| `public_repository_registry_ids`    | Map of public repository keys to registry IDs     |
+| `registry_scanning_configuration`   | The registry scanning configuration               |
+| `registry_pull_through_cache_rules` | Map of pull-through cache rules                   |
+| `repositories_summary`              | Comprehensive summary of all private repositories |
+| `public_repositories_summary`       | Comprehensive summary of all public repositories  |
 
 ## Naming Convention
 
@@ -377,6 +378,7 @@ All private repositories follow the naming pattern:
 ```
 
 **Examples:**
+
 - `ause1-ecr-prod-myapp-api` (us-east-1, prod account, myapp project, api repo)
 - `euw1-ecr-dev-platform-worker` (eu-west-1, dev account, platform project, worker repo)
 
@@ -384,35 +386,41 @@ Public repositories use: `{account_name}-{project_name}-{repository_key}` (no re
 
 ## Region Prefix Mapping
 
-| Region | Prefix | Region | Prefix |
-|--------|--------|--------|--------|
-| us-east-1 | ause1 | eu-west-1 | euw1 |
-| us-east-2 | ause2 | eu-west-2 | euw2 |
-| us-west-1 | ausw1 | eu-west-3 | euw3 |
-| us-west-2 | ausw2 | eu-central-1 | euc1 |
-| ap-southeast-1 | apse1 | eu-north-1 | eun1 |
-| ap-southeast-2 | apse2 | sa-east-1 | sae1 |
-| ap-northeast-1 | apne1 | ca-central-1 | cac1 |
-| ap-northeast-2 | apne2 | me-south-1 | mes1 |
+| Region         | Prefix | Region       | Prefix |
+| -------------- | ------ | ------------ | ------ |
+| us-east-1      | ause1  | eu-west-1    | euw1   |
+| us-east-2      | ause2  | eu-west-2    | euw2   |
+| us-west-1      | ausw1  | eu-west-3    | euw3   |
+| us-west-2      | ausw2  | eu-central-1 | euc1   |
+| ap-southeast-1 | apse1  | eu-north-1   | eun1   |
+| ap-southeast-2 | apse2  | sa-east-1    | sae1   |
+| ap-northeast-1 | apne1  | ca-central-1 | cac1   |
+| ap-northeast-2 | apne2  | me-south-1   | mes1   |
 
 ## Troubleshooting
 
 ### Error: KMS key required
+
 ```
 Error: When encryption_type is 'KMS', kms_key must be provided.
 ```
+
 **Solution**: Provide a `kms_key` ARN when using `encryption_type = "KMS"`.
 
 ### Error: image_tag_mutability invalid
+
 ```
 Error: image_tag_mutability must be one of: MUTABLE, IMMUTABLE.
 ```
+
 **Solution**: Use one of the valid values for `image_tag_mutability`.
 
 ### Error: Public repository requires us-east-1
+
 ECR Public repositories can only be created in `us-east-1`. Ensure your AWS provider is configured for that region when using `public_repositories`.
 
 ### Error: Registry scanning already configured
+
 Only one scanning configuration can exist per registry. If you get a conflict, ensure only one module instance manages `manage_registry_scanning_configuration = true`.
 
 ## License
