@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [v1.1.3] - 2026-10-27
+
+### Changed
+
+- Use minimum-only version constraints in the reusable module, per HashiCorp guidance: AWS provider `~> 6.0` -> `>= 6.0`
+- Set module `required_version` to `>= 1.3` (was `~> 1.0`), the real minimum required by the use of `optional()` object attributes in variable types (Terraform 1.3+)
+- Examples (root modules) keep pessimistic constraints: `required_version` `~> 1.3` and AWS provider `~> 6.0`
+- Update README requirements table
+
 ## [v1.1.2] - 2026-04-25
 
 ### Changed
