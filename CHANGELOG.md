@@ -26,11 +26,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update README documentation and CHANGELOG formatting
 
+## [v1.1.1] - 2026-02-28
+
+### Changed
+
+- Update README documentation and CHANGELOG formatting
+
 ## [v1.1.0] - 2026-02-27
 
 ### Added
 
 - `use_region_prefix` boolean variable (default: `true`) to control whether the region prefix is included in resource names. When `false`, names omit the prefix
+
+## [v1.0.4] - 2026-02-27
+
+### Changed
+
+- No changes: the `v1.0.4` tag points to the same commit as `v1.0.3`
 
 ## [v1.0.3] - 2026-02-27
 
