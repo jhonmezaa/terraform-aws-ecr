@@ -6,8 +6,8 @@
 module "ecr" {
   source = "../../ecr"
 
-  account_name = "dev"
-  project_name = "myapp"
+  account_name = var.account_name
+  project_name = var.project_name
 
   repositories = {
     api = {
@@ -25,6 +25,5 @@ module "ecr" {
 
   tags_common = {
     Environment = "dev"
-    ManagedBy   = "Terraform"
   }
 }

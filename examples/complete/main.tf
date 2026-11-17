@@ -4,11 +4,6 @@
 # registry scanning, replication, and pull-through cache
 ################################################################################
 
-locals {
-  account_name = "prod"
-  project_name = "platform"
-}
-
 ################################################################################
 # ECR Module - Full Configuration
 ################################################################################
@@ -16,8 +11,8 @@ locals {
 module "ecr" {
   source = "../../ecr"
 
-  account_name = local.account_name
-  project_name = local.project_name
+  account_name = var.account_name
+  project_name = var.project_name
 
   ############################################################################
   # Private Repositories
@@ -134,6 +129,26 @@ module "ecr" {
   }
 
   ############################################################################
+  # Public Repositories (ECR Public is only available in us-east-1)
+  ############################################################################
+
+  public_repositories = {
+    cli = {
+      catalog_data = {
+        description       = "Platform CLI image"
+        about_text        = "Container image for the platform CLI"
+        usage_text        = "docker pull public.ecr.aws/<alias>/prod-platform-cli:latest"
+        architectures     = ["x86-64", "ARM 64"]
+        operating_systems = ["Linux"]
+      }
+
+      tags = {
+        Service = "cli"
+      }
+    }
+  }
+
+  ############################################################################
   # Registry Scanning Configuration
   ############################################################################
 
@@ -213,7 +228,6 @@ module "ecr" {
 
   tags_common = {
     Environment = "production"
-    ManagedBy   = "Terraform"
     Team        = "platform"
   }
 }
