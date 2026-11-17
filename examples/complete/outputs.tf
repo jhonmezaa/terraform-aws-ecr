@@ -22,3 +22,13 @@ output "registry_pull_through_cache_rules" {
   description = "Pull through cache rules"
   value       = module.ecr.registry_pull_through_cache_rules
 }
+
+output "public_repository_uris" {
+  description = "Map of public repository keys to URIs"
+  value       = module.ecr.public_repository_uris
+}
+
+output "public_repositories_summary" {
+  description = "Summary of all public repositories"
+  value       = module.ecr.public_repositories_summary
+}
