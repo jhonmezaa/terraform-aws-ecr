@@ -19,5 +19,7 @@ resource "aws_ecr_repository" "this" {
 
   force_delete = each.value.force_delete
 
+  region = var.region
+
   tags = local.repository_tags[each.key]
 }

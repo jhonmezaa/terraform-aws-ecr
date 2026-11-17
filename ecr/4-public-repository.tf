@@ -6,6 +6,7 @@ resource "aws_ecrpublic_repository" "this" {
   for_each = var.create ? var.public_repositories : {}
 
   repository_name = local.public_repository_names[each.key]
+  region          = var.region
 
   dynamic "catalog_data" {
     for_each = each.value.catalog_data != null ? [each.value.catalog_data] : []
@@ -127,5 +128,6 @@ resource "aws_ecrpublic_repository_policy" "this" {
   }
 
   repository_name = aws_ecrpublic_repository.this[each.key].repository_name
+  region          = var.region
   policy          = each.value.create_repository_policy ? data.aws_iam_policy_document.public_repository[each.key].json : each.value.repository_policy
 }

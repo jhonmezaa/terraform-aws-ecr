@@ -5,6 +5,8 @@
 resource "aws_ecr_replication_configuration" "this" {
   count = var.create && var.create_registry_replication_configuration ? 1 : 0
 
+  region = var.region
+
   replication_configuration {
 
     dynamic "rule" {

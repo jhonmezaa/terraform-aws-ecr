@@ -169,5 +169,6 @@ resource "aws_ecr_repository_policy" "this" {
   }
 
   repository = aws_ecr_repository.this[each.key].name
+  region     = var.region
   policy     = each.value.create_repository_policy ? data.aws_iam_policy_document.repository[each.key].json : each.value.repository_policy
 }
