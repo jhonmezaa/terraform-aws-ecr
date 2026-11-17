@@ -11,11 +11,37 @@ variable "create" {
 variable "account_name" {
   description = "Account name for resource naming (e.g., 'prod', 'dev', 'staging')"
   type        = string
+
+  validation {
+    condition     = length(var.account_name) > 0 && length(var.account_name) <= 32
+    error_message = "account_name debe tener entre 1 y 32 caracteres."
+  }
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.account_name))
+    error_message = "account_name solo puede contener letras minúsculas, números y guiones."
+  }
 }
 
 variable "project_name" {
   description = "Project name for resource naming (e.g., 'myapp', 'platform')"
   type        = string
+
+  validation {
+    condition     = length(var.project_name) > 0 && length(var.project_name) <= 32
+    error_message = "project_name debe tener entre 1 y 32 caracteres."
+  }
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.project_name))
+    error_message = "project_name solo puede contener letras minúsculas, números y guiones."
+  }
+}
+
+variable "region" {
+  description = "AWS region where resources will be managed (provider v6 per-resource region). Defaults to the provider region. Also used to derive the region prefix"
+  type        = string
+  default     = null
 }
 
 variable "region_prefix" {
@@ -43,12 +69,15 @@ variable "tags_common" {
 variable "repositories" {
   description = "Map of private ECR repository configurations. Each key becomes part of the repository name"
   type = map(object({
+    # Explicit name override (defaults to the naming convention)
+    name = optional(string)
+
     # Image tag settings
     image_tag_mutability = optional(string, "IMMUTABLE")
 
     # Encryption
     encryption_type = optional(string, "AES256")
-    kms_key         = optional(string, null)
+    kms_key         = optional(string, null) # KMS key ARN; null with encryption_type = "KMS" uses the AWS managed key (aws/ecr)
 
     # Scanning
     image_scan_on_push = optional(bool, true)
@@ -117,9 +146,17 @@ variable "repositories" {
   validation {
     condition = alltrue([
       for k, v in var.repositories :
-      v.encryption_type == "KMS" ? v.kms_key != null : true
+      !v.attach_repository_policy || v.create_repository_policy || v.repository_policy != null
     ])
-    error_message = "When encryption_type is 'KMS', kms_key must be provided."
+    error_message = "repository_policy must be provided when attach_repository_policy is true and create_repository_policy is false."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.repositories :
+      can(regex("^[a-z0-9]+(?:[._-][a-z0-9]+)*$", k))
+    ])
+    error_message = "Repository keys must be lowercase alphanumeric, optionally separated by '.', '_' or '-'."
   }
 }
 
@@ -130,6 +167,9 @@ variable "repositories" {
 variable "public_repositories" {
   description = "Map of public ECR repository configurations. Each key becomes part of the repository name"
   type = map(object({
+    # Explicit name override (defaults to the naming convention)
+    name = optional(string)
+
     # Catalog data
     catalog_data = optional(object({
       about_text        = optional(string)
@@ -176,6 +216,22 @@ variable "public_repositories" {
     tags = optional(map(string), {})
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for k, v in var.public_repositories :
+      !v.attach_repository_policy || v.create_repository_policy || v.repository_policy != null
+    ])
+    error_message = "repository_policy must be provided when attach_repository_policy is true and create_repository_policy is false."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.public_repositories :
+      can(regex("^[a-z0-9]+(?:[._-][a-z0-9]+)*$", k))
+    ])
+    error_message = "Public repository keys must be lowercase alphanumeric, optionally separated by '.', '_' or '-'."
+  }
 }
 
 ################################################################################
@@ -206,6 +262,7 @@ variable "registry_pull_through_cache_rules" {
     credential_arn             = optional(string)
     custom_role_arn            = optional(string)
     upstream_repository_prefix = optional(string)
+    region                     = optional(string)
   }))
   default = {}
 }
@@ -266,4 +323,9 @@ variable "registry_replication_rules" {
     })))
   }))
   default = null
+
+  validation {
+    condition     = var.registry_replication_rules == null || try(length(var.registry_replication_rules) <= 10, true)
+    error_message = "registry_replication_rules supports a maximum of 10 rules."
+  }
 }

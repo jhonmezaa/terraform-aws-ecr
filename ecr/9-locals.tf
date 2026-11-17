@@ -34,13 +34,22 @@ locals {
     "me-south-1"     = "mes1"
     "me-central-1"   = "mec1"
     "sa-east-1"      = "sae1"
+    "ap-east-2"      = "ape2"
+    "ap-southeast-5" = "apse5"
+    "ap-southeast-6" = "apse6"
+    "ap-southeast-7" = "apse7"
+    "mx-central-1"   = "mxc1"
   }
 
+  # Effective region: explicit var.region (provider v6 per-resource region) or provider region
+  region = coalesce(var.region, data.aws_region.current.region)
+
   # Determine region prefix (use provided or derive from current region)
+  # Falls back to the full region name for regions not present in the map
   region_prefix = var.region_prefix != null ? var.region_prefix : lookup(
     local.region_prefix_map,
-    data.aws_region.current.region,
-    "unknown"
+    local.region,
+    local.region
   )
 
   # Name prefix: includes region prefix when use_region_prefix is true
@@ -54,22 +63,10 @@ locals {
   # Private Repository Naming and Filtering
   ############################################################################
 
-  # Generate repository names following monorepo convention
+  # Generate repository names following monorepo convention (overridable with `name`)
   repository_names = {
     for k, v in var.repositories :
-    k => "${local.name_prefix}ecr-${var.account_name}-${var.project_name}-${k}"
-  }
-
-  # Repositories that need a policy attached
-  repositories_with_policy = {
-    for k, v in var.repositories :
-    k => v if v.attach_repository_policy
-  }
-
-  # Repositories that need a lifecycle policy
-  repositories_with_lifecycle = {
-    for k, v in var.repositories :
-    k => v if v.create_lifecycle_policy && v.repository_lifecycle_policy != null && v.repository_lifecycle_policy != ""
+    k => coalesce(v.name, "${local.name_prefix}ecr-${var.account_name}-${var.project_name}-${k}")
   }
 
   ############################################################################
@@ -79,44 +76,48 @@ locals {
   # Public repository names follow a different pattern (no region prefix, ECR Public is global)
   public_repository_names = {
     for k, v in var.public_repositories :
-    k => "${var.account_name}-${var.project_name}-${k}"
+    k => coalesce(v.name, "${var.account_name}-${var.project_name}-${k}")
   }
 
   ############################################################################
   # Tags
   ############################################################################
 
-  # Common tags for private repositories
+  # Tags for private repositories: common -> module-specific -> per-repository -> Name/ManagedBy
   repository_tags = {
     for k, v in var.repositories :
     k => merge(
       var.tags_common,
       {
-        Name          = local.repository_names[k]
         RepositoryKey = k
         AccountName   = var.account_name
         ProjectName   = var.project_name
-        ManagedBy     = "Terraform"
-        Region        = data.aws_region.current.region
+        Region        = local.region
         RegionCode    = local.region_prefix
       },
-      v.tags
+      v.tags,
+      {
+        Name      = local.repository_names[k]
+        ManagedBy = "Terraform"
+      }
     )
   }
 
-  # Common tags for public repositories
+  # Tags for public repositories: common -> module-specific -> per-repository -> Name/ManagedBy
   public_repository_tags = {
     for k, v in var.public_repositories :
     k => merge(
       var.tags_common,
       {
-        Name          = local.public_repository_names[k]
         RepositoryKey = k
         AccountName   = var.account_name
         ProjectName   = var.project_name
-        ManagedBy     = "Terraform"
       },
-      v.tags
+      v.tags,
+      {
+        Name      = local.public_repository_names[k]
+        ManagedBy = "Terraform"
+      }
     )
   }
 }
