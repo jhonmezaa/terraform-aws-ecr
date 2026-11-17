@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.0] - 2026-11-17
+
+### Added
+
+- `region` variable (AWS provider v6 per-resource region) applied to every resource; it also drives the region prefix and the `Region` tag. Defaults to the provider region
+- Per-rule `region` attribute in `registry_pull_through_cache_rules` (falls back to `region`)
+- Optional `name` attribute in `repositories` and `public_repositories` entries to override the generated repository name
+- Region prefixes for `ap-east-2`, `ap-southeast-5`, `ap-southeast-6`, `ap-southeast-7` and `mx-central-1`
+- `account_name` / `project_name` validation (1-32 characters, `^[a-z0-9-]+$`)
+- Validation of repository keys, of `repository_policy` being set when `attach_repository_policy = true` and `create_repository_policy = false`, and of the 10-rule limit in `registry_replication_rules`
+- `variables.tf` and `README.md` for both examples; the `complete` example now includes a public repository
+
+### Changed
+
+- Tags are now merged as `tags_common` -> module tags -> per-repository `tags` -> `{ Name, ManagedBy = "Terraform" }`, so `Name` and `ManagedBy` can no longer be overridden by per-repository tags
+- Regions missing from `region_prefix_map` now use the full region name as prefix instead of `unknown`
+- README: pinned `source` with `?ref=`, documented public repository attributes, tags, full region map and the MIT license
+
+### Fixed
+
+- `encryption_type = "KMS"` no longer requires `kms_key`; when omitted, ECR uses the AWS managed key (`aws/ecr`), matching the provider and upstream behaviour
+- Removed unused locals `repositories_with_policy` and `repositories_with_lifecycle`
+
+### Upgrade notes
+
+- No change for repositories in regions already present in the map. If you deployed in a region that previously resolved to the `unknown` prefix (`ap-east-2`, `ap-southeast-5/6/7`, `mx-central-1` or any unmapped region), the repository names change and Terraform will plan a replacement. Set `region_prefix = "unknown"` to keep the existing names
+- `account_name` and `project_name` are now validated: values with uppercase letters, underscores or more than 32 characters are rejected at plan time
+- If a per-repository `tags` map set `Name` or `ManagedBy`, those values are now ignored (tag-only, in-place update)
+
 ## [v1.1.5] - 2026-10-27
 
 ### Changed
