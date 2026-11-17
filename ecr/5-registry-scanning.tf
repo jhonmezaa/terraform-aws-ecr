@@ -6,6 +6,7 @@ resource "aws_ecr_registry_scanning_configuration" "this" {
   count = var.create && var.manage_registry_scanning_configuration ? 1 : 0
 
   scan_type = var.registry_scan_type
+  region    = var.region
 
   dynamic "rule" {
     for_each = var.registry_scan_rules != null ? var.registry_scan_rules : []

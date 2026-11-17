@@ -9,5 +9,6 @@ resource "aws_ecr_lifecycle_policy" "this" {
   }
 
   repository = aws_ecr_repository.this[each.key].name
+  region     = var.region
   policy     = each.value.repository_lifecycle_policy
 }

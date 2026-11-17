@@ -10,4 +10,5 @@ resource "aws_ecr_pull_through_cache_rule" "this" {
   credential_arn             = each.value.credential_arn
   custom_role_arn            = each.value.custom_role_arn
   upstream_repository_prefix = each.value.upstream_repository_prefix
+  region                     = each.value.region != null ? each.value.region : var.region
 }
